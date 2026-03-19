@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>EGM Coin Drop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface-alt: #222632;
+    --border: #2e3344;
+    --border-focus: #5b8def;
+    --text: #e8eaf0;
+    --text-dim: #7a8099;
+    --text-muted: #4a5068;
+    --accent: #5b8def;
+    --accent-glow: rgba(91, 141, 239, 0.15);
+    --green: #34d399;
+    --green-bg: rgba(52, 211, 153, 0.1);
+    --amber: #fbbf24;
+    --amber-bg: rgba(251, 191, 36, 0.08);
+    --red: #f87171;
+    --disabled-bg: #14161e;
+    --disabled-text: #333750;
+    --coin-gold: #fbbf24;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Header ── */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: env(safe-area-inset-top, 12px) 16px 12px;
+  }
+
+  .header-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .header-title .coin-icon {
+    width: 20px; height: 20px;
+    background: var(--coin-gold);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: #1a1d27;
+    font-weight: 700;
+  }
+
+  .controls-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .field-group {
+    flex: 1;
+  }
+
+  .field-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+
+  .field-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field-input:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  .total-display {
+    background: var(--green-bg);
+    border: 1px solid rgba(52, 211, 153, 0.25);
+    color: var(--green);
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 11px 8px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .btn:active { transform: scale(0.97); }
+
+  .btn-calc {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .btn-clear {
+    background: var(--surface);
+    color: var(--red);
+    border: 1px solid rgba(248, 113, 113, 0.25);
+  }
+
+  .btn-print {
+    background: var(--surface);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+
+  /* ── Summary strip ── */
+  .summary-strip {
+    display: flex;
+    gap: 1px;
+    background: var(--border);
+    margin: 0;
+  }
+
+  .summary-item {
+    flex: 1;
+    background: var(--surface);
+    padding: 10px 8px;
+    text-align: center;
+  }
+
+  .summary-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  .summary-label {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  /* ── Table ── */
+  .table-wrap {
+    padding: 0;
+  }
+
+  .tbl-header {
+    display: grid;
+    grid-template-columns: 52px 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .tbl-header .th {
+    background: var(--surface-alt);
+    padding: 10px 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    text-align: center;
+  }
+
+  .tbl-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .tbl-row {
+    display: grid;
+    grid-template-columns: 52px 1fr 1fr 1fr;
+    gap: 1px;
+  }
+
+  .tbl-row .cell {
+    background: var(--bg);
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .egm-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .egm-num.coinless {
+    color: var(--text-muted);
+  }
+
+  .cell-input {
+    width: 100%;
+    height: 100%;
+    min-height: 44px;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    outline: none;
+    padding: 8px 4px;
+  }
+
+  .cell-input:focus {
+    background: var(--accent-glow);
+    box-shadow: inset 0 0 0 2px var(--accent);
+  }
+
+  .cell-input::placeholder {
+    color: var(--text-muted);
+    font-weight: 400;
+    font-size: 12px;
+  }
+
+  .cell-input:disabled {
+    background: var(--disabled-bg);
+    color: var(--disabled-text);
+    cursor: not-allowed;
+  }
+
+  .cell-input:disabled::placeholder {
+    color: transparent;
+  }
+
+  .tbl-row.coinless-row .cell:nth-child(2) {
+    background: var(--disabled-bg);
+  }
+
+  .tbl-row.has-value .cell:nth-child(2) {
+    background: rgba(52, 211, 153, 0.04);
+  }
+
+  /* Row numbering stripe */
+  .tbl-row:nth-child(even) .cell {
+    background: var(--surface);
+  }
+  .tbl-row:nth-child(even).coinless-row .cell:nth-child(2),
+  .tbl-row:nth-child(even) .cell-input:disabled {
+    background: var(--disabled-bg);
+  }
+
+  /* ── Variance section ── */
+  .variance-section {
+    padding: 16px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .variance-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .variance-row:last-child { border-bottom: none; }
+
+  .variance-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dim);
+  }
+
+  .variance-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .variance-val.positive { color: var(--green); }
+  .variance-val.negative { color: var(--red); }
+  .variance-val.zero { color: var(--text-dim); }
+
+  /* ── Footer ── */
+  .footer-pad {
+    height: 100px;
+  }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--green);
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  /* ── Print ── */
+  @media print {
+    body { background: #fff; color: #000; }
+    .header { position: relative; background: #fff; border-bottom: 2px solid #000; }
+    .header-title { color: #000; }
+    .coin-icon { background: #999; }
+    .field-label { color: #555; }
+    .field-input { border: 1px solid #ccc; color: #000; background: #fff; }
+    .btn-row { display: none; }
+    .tbl-header .th { background: #eee; color: #333; }
+    .tbl-row .cell { background: #fff !important; }
+    .tbl-row:nth-child(even) .cell { background: #f7f7f7 !important; }
+    .egm-num { color: #000; }
+    .cell-input { color: #000; }
+    .cell-input:disabled { background: #f0f0f0 !important; color: #bbb; }
+    .summary-item { background: #f7f7f7; }
+    .summary-val { color: #000; }
+    .summary-label { color: #555; }
+    .variance-section { background: #f7f7f7; }
+    .variance-val { color: #000 !important; }
+    .toast { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">
+    <span class="coin-icon">$</span>
+    EGM Coin Drop
+  </div>
+  <div class="controls-row">
+    <div class="field-group">
+      <div class="field-label">Date</div>
+      <input type="date" id="dropDate" class="field-input">
+    </div>
+    <div class="field-group">
+      <div class="field-label">Total Coins</div>
+      <input type="number" id="totalCoins" class="field-input total-display" placeholder="0" inputmode="numeric">
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-calc" onclick="calculate()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16v16H4z" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/></svg>
+      Calculate
+    </button>
+    <button class="btn btn-clear" onclick="clearAll()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      Clear
+    </button>
+    <button class="btn btn-print" onclick="window.print()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Print
+    </button>
+  </div>
+</div>
+
+<div class="summary-strip" id="summaryStrip" style="display:none;">
+  <div class="summary-item">
+    <div class="summary-val" id="sumCoins">0</div>
+    <div class="summary-label">Counted</div>
+  </div>
+  <div class="summary-item">
+    <div class="summary-val" id="sumTotal">0</div>
+    <div class="summary-label">Expected</div>
+  </div>
+  <div class="summary-item">
+    <div class="summary-val" id="sumVariance">0</div>
+    <div class="summary-label">Variance</div>
+  </div>
+  <div class="summary-item">
+    <div class="summary-val" id="sumMachines">0</div>
+    <div class="summary-label">Machines</div>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <div class="tbl-header">
+    <div class="th">EGM</div>
+    <div class="th">Coins</div>
+    <div class="th">Hopper</div>
+    <div class="th">Notes</div>
+  </div>
+  <div class="tbl-body" id="tableBody"></div>
+</div>
+
+<div class="footer-pad"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+  const COINLESS = new Set([10,11,12,13,14,15,19,25,26,27,28,43,50,55,60,61,62,69,70,71]);
+  const TOTAL_MACHINES = 77;
+
+  // Set today's date
+  const dateInput = document.getElementById('dropDate');
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  dateInput.value = `${yyyy}-${mm}-${dd}`;
+
+  // Build table
+  const tableBody = document.getElementById('tableBody');
+  const fragment = document.createDocumentFragment();
+
+  for (let i = 1; i <= TOTAL_MACHINES; i++) {
+    const isCoinless = COINLESS.has(i);
+    const row = document.createElement('div');
+    row.className = 'tbl-row' + (isCoinless ? ' coinless-row' : '');
+    row.id = `row-${i}`;
+
+    row.innerHTML = `
+      <div class="cell">
+        <span class="egm-num ${isCoinless ? 'coinless' : ''}">${i}</span>
+      </div>
+      <div class="cell">
+        <input type="number" class="cell-input coin-input" id="coin-${i}"
+               inputmode="numeric" pattern="[0-9]*"
+               placeholder="${isCoinless ? '' : '—'}"
+               ${isCoinless ? 'disabled' : ''}
+               data-egm="${i}"
+               onfocus="scrollToInput(this)"
+               oninput="onCoinInput(this)">
+      </div>
+      <div class="cell">
+        <input type="text" class="cell-input" disabled placeholder="">
+      </div>
+      <div class="cell">
+        <input type="text" class="cell-input" disabled placeholder="">
+      </div>
+    `;
+
+    fragment.appendChild(row);
+  }
+
+  tableBody.appendChild(fragment);
+
+  function scrollToInput(el) {
+    setTimeout(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 300);
+  }
+
+  function onCoinInput(el) {
+    const row = document.getElementById(`row-${el.dataset.egm}`);
+    if (el.value && el.value !== '0') {
+      row.classList.add('has-value');
+    } else {
+      row.classList.remove('has-value');
+    }
+  }
+
+  function calculate() {
+    const totalCoins = parseFloat(document.getElementById('totalCoins').value) || 0;
+    let countedSum = 0;
+    let machineCount = 0;
+
+    for (let i = 1; i <= TOTAL_MACHINES; i++) {
+      if (COINLESS.has(i)) continue;
+      const input = document.getElementById(`coin-${i}`);
+      const val = parseFloat(input.value) || 0;
+      countedSum += val;
+      if (val > 0) machineCount++;
+    }
+
+    const variance = totalCoins - countedSum;
+
+    document.getElementById('sumCoins').textContent = countedSum.toLocaleString();
+    document.getElementById('sumTotal').textContent = totalCoins.toLocaleString();
+    document.getElementById('sumMachines').textContent = machineCount;
+
+    const varEl = document.getElementById('sumVariance');
+    if (variance > 0) {
+      varEl.textContent = '+' + variance.toLocaleString();
+      varEl.className = 'summary-val positive';
+    } else if (variance < 0) {
+      varEl.textContent = variance.toLocaleString();
+      varEl.className = 'summary-val negative';
+    } else {
+      varEl.textContent = '0';
+      varEl.className = 'summary-val zero';
+    }
+
+    document.getElementById('summaryStrip').style.display = 'flex';
+    showToast('Calculated — ' + machineCount + ' machines counted');
+  }
+
+  function clearAll() {
+    if (!confirm('Clear all coin entries?')) return;
+
+    for (let i = 1; i <= TOTAL_MACHINES; i++) {
+      if (COINLESS.has(i)) continue;
+      const input = document.getElementById(`coin-${i}`);
+      input.value = '';
+      document.getElementById(`row-${i}`).classList.remove('has-value');
+    }
+
+    document.getElementById('totalCoins').value = '';
+    document.getElementById('summaryStrip').style.display = 'none';
+    showToast('All entries cleared');
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+</script>
+
+</body>
+</html>
