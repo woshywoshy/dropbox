@@ -503,7 +503,9 @@
     .print-badge {
       display: inline-flex;
       align-items: center;
-      gap: 1px;
+      justify-content: center;
+      vertical-align: middle;
+      gap: 1.5px;
       padding: 0px 3px;
       border-radius: 20px;
       background: #fef8e7;
@@ -515,7 +517,7 @@
       text-transform: uppercase;
       color: #a08520;
       white-space: nowrap;
-      line-height: 8px;
+      line-height: 1;
       height: 8px;
     }
 
@@ -523,6 +525,8 @@
       width: 4px;
       height: 4px;
       flex-shrink: 0;
+      vertical-align: middle;
+      display: block;
     }
 
     .print-table td.empty-cell {
