@@ -478,10 +478,30 @@
     }
 
     .print-table td.coinless-cell {
-      font-size: 7px;
-      color: #999;
-      letter-spacing: 0.5px;
+      padding: 1px 2px;
+    }
+
+    .print-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 1px 5px;
+      border-radius: 10px;
+      background: #fef8e7;
+      border: 0.5px solid #d4c48a;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 5.5px;
+      font-weight: 700;
+      letter-spacing: 1px;
       text-transform: uppercase;
+      color: #a08520;
+      white-space: nowrap;
+    }
+
+    .print-badge svg {
+      width: 7px;
+      height: 7px;
+      flex-shrink: 0;
     }
   }
 </style>
@@ -669,7 +689,7 @@
       const isCoinless = COINLESS.has(i);
       let coinVal = '';
       if (isCoinless) {
-        coinVal = '<td class="coinless-cell">Coinless</td>';
+        coinVal = '<td class="coinless-cell"><span class="coinless-badge print-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="4" y1="4" x2="20" y2="20"/></svg>Coinless</span></td>';
       } else {
         const input = document.getElementById(`coin-${i}`);
         coinVal = `<td>${input.value || ''}</td>`;
