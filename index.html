@@ -79,6 +79,7 @@
 
   .controls-row {
     display: flex;
+    justify-content: space-between;
     gap: 10px;
     align-items: flex-end;
     margin-bottom: 10px;
@@ -87,6 +88,11 @@
   .field-group {
     flex: 0 0 35%;
     min-width: 0;
+    text-align: left;
+  }
+
+  .field-group-right .field-label {
+    text-align: right;
   }
 
   .field-label {
@@ -125,6 +131,7 @@
     background: var(--green-bg);
     border: 1px solid rgba(52, 211, 153, 0.25);
     color: var(--green);
+    text-align: right;
   }
 
   .btn-row {
@@ -558,7 +565,7 @@
       <div class="field-label">Date</div>
       <input type="date" id="dropDate" class="field-input">
     </div>
-    <div class="field-group">
+    <div class="field-group field-group-right">
       <div class="field-label">Total Coins</div>
       <input type="number" id="totalCoins" class="field-input total-display" placeholder="0" inputmode="numeric">
     </div>
