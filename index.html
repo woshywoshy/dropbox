@@ -281,7 +281,7 @@
   }
 
   .cell-input:disabled {
-    background: var(--disabled-bg);
+    background: transparent;
     color: var(--disabled-text);
     cursor: not-allowed;
   }
@@ -291,7 +291,6 @@
   }
 
   .tbl-row.coinless-row .cell:nth-child(2) {
-    background: var(--disabled-bg);
   }
 
   .coinless-badge {
@@ -318,16 +317,11 @@
   }
 
   .tbl-row.has-value .cell:nth-child(2) {
-    background: rgba(52, 211, 153, 0.04);
   }
 
   /* Row numbering stripe */
   .tbl-row:nth-child(even) .cell {
     background: var(--surface);
-  }
-  .tbl-row:nth-child(even).coinless-row .cell:nth-child(2),
-  .tbl-row:nth-child(even) .cell-input:disabled {
-    background: var(--disabled-bg);
   }
 
   /* ── Variance section ── */
@@ -406,7 +400,7 @@
     .tbl-row:nth-child(even) .cell { background: #f7f7f7 !important; }
     .egm-num { color: #000; }
     .cell-input { color: #000; }
-    .cell-input:disabled { background: #f0f0f0 !important; color: #bbb; }
+    .cell-input:disabled { background: transparent !important; color: #bbb; }
     .coinless-badge { background: #f5f0e0; border-color: #ccc; color: #888; }
     .summary-item { background: #f7f7f7; }
     .summary-val { color: #000; }
@@ -450,24 +444,7 @@
   </div>
 </div>
 
-<div class="summary-strip" id="summaryStrip" style="display:none;">
-  <div class="summary-item">
-    <div class="summary-val" id="sumCoins">0</div>
-    <div class="summary-label">Counted</div>
-  </div>
-  <div class="summary-item">
-    <div class="summary-val" id="sumTotal">0</div>
-    <div class="summary-label">Expected</div>
-  </div>
-  <div class="summary-item">
-    <div class="summary-val" id="sumVariance">0</div>
-    <div class="summary-label">Variance</div>
-  </div>
-  <div class="summary-item">
-    <div class="summary-val" id="sumMachines">0</div>
-    <div class="summary-label">Machines</div>
-  </div>
-</div>
+
 
 <div class="table-wrap">
   <div class="tbl-header">
@@ -548,38 +525,17 @@
   }
 
   function calculate() {
-    const totalCoins = parseFloat(document.getElementById('totalCoins').value) || 0;
     let countedSum = 0;
-    let machineCount = 0;
 
     for (let i = 1; i <= TOTAL_MACHINES; i++) {
       if (COINLESS.has(i)) continue;
       const input = document.getElementById(`coin-${i}`);
       const val = parseFloat(input.value) || 0;
       countedSum += val;
-      if (val > 0) machineCount++;
     }
 
-    const variance = totalCoins - countedSum;
-
-    document.getElementById('sumCoins').textContent = countedSum.toLocaleString();
-    document.getElementById('sumTotal').textContent = totalCoins.toLocaleString();
-    document.getElementById('sumMachines').textContent = machineCount;
-
-    const varEl = document.getElementById('sumVariance');
-    if (variance > 0) {
-      varEl.textContent = '+' + variance.toLocaleString();
-      varEl.className = 'summary-val positive';
-    } else if (variance < 0) {
-      varEl.textContent = variance.toLocaleString();
-      varEl.className = 'summary-val negative';
-    } else {
-      varEl.textContent = '0';
-      varEl.className = 'summary-val zero';
-    }
-
-    document.getElementById('summaryStrip').style.display = 'flex';
-    showToast('Calculated — ' + machineCount + ' machines counted');
+    document.getElementById('totalCoins').value = countedSum;
+    showToast('Total: $' + countedSum.toLocaleString());
   }
 
   function clearAll() {
@@ -593,7 +549,6 @@
     }
 
     document.getElementById('totalCoins').value = '';
-    document.getElementById('summaryStrip').style.display = 'none';
     showToast('All entries cleared');
   }
 
