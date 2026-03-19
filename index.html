@@ -392,7 +392,7 @@
   @media print {
     @page {
       size: A4 portrait;
-      margin: 10mm 8mm;
+      margin: 6mm 6mm;
     }
 
     /* Hide screen UI */
@@ -401,29 +401,29 @@
     /* Show print layout */
     .print-layout { display: block !important; }
 
-    body { background: #fff; color: #000; font-family: 'DM Sans', Arial, sans-serif; }
+    body { background: #fff; color: #000; font-family: 'DM Sans', Arial, sans-serif; margin: 0; padding: 0; }
 
     .print-header {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      border-bottom: 2px solid #000;
-      padding-bottom: 6px;
-      margin-bottom: 8px;
+      border-bottom: 1.5px solid #000;
+      padding-bottom: 3px;
+      margin-bottom: 4px;
     }
 
     .print-title {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 14px;
+      font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 2px;
     }
 
     .print-meta {
-      font-size: 10px;
+      font-size: 9px;
       display: flex;
-      gap: 16px;
+      gap: 14px;
     }
 
     .print-meta strong {
@@ -432,13 +432,13 @@
 
     .print-columns {
       display: flex;
-      gap: 10px;
+      gap: 6px;
     }
 
     .print-table {
       flex: 1;
       border-collapse: collapse;
-      font-size: 9px;
+      font-size: 8px;
       table-layout: fixed;
       width: 50%;
     }
@@ -446,23 +446,23 @@
     .print-table th {
       background: #e8e8e8;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 8px;
+      font-size: 7px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
-      padding: 4px 3px;
+      padding: 2px 2px;
       text-align: center;
-      border: 1px solid #ccc;
+      border: 0.5px solid #ccc;
     }
 
     .print-table td {
-      padding: 3px 3px;
+      padding: 1.5px 2px;
       text-align: center;
-      border: 1px solid #ddd;
+      border: 0.5px solid #ddd;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 9px;
-      height: 18px;
-      line-height: 18px;
+      font-size: 8px;
+      height: 14px;
+      line-height: 14px;
     }
 
     .print-table tr:nth-child(even) td {
@@ -471,11 +471,11 @@
 
     .print-table td:first-child {
       font-weight: 700;
-      width: 32px;
+      width: 28px;
     }
 
     .print-table td.coinless-cell {
-      font-size: 7px;
+      font-size: 6.5px;
       color: #999;
       letter-spacing: 0.5px;
       text-transform: uppercase;
@@ -681,6 +681,11 @@
         rightBody.appendChild(tr);
       }
     }
+
+    // Right table has 38 rows (40-77), add 1 empty row to match left table's 39
+    const emptyTr = document.createElement('tr');
+    emptyTr.innerHTML = '<td></td><td></td><td></td><td></td>';
+    rightBody.appendChild(emptyTr);
 
     window.print();
   }
